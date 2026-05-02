@@ -2,29 +2,34 @@ name: Build APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout código
+      - name: Baixar código
         uses: actions/checkout@v4
 
       - name: Instalar Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.5'
+          channel: stable
+          cache: true
 
-      - name: Instalar dependências
+      - name: Verificar Flutter
+        run: flutter doctor -v
+
+      - name: Baixar dependências
         run: flutter pub get
 
       - name: Compilar APK
         run: flutter build apk --release
 
-      - name: Upload APK
+      - name: Enviar APK como artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: consultamed-apk
           path: build/app/outputs/flutter-apk/app-release.apk
